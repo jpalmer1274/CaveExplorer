@@ -51,7 +51,7 @@ class GameScene: SKScene {
 
         leftButton.position = CGPoint(x:-225, y:-102)
 
-        leftButton.size = CGSize (width: 55, height: 55)
+        leftButton.size = CGSize (width: 50, height: 50)
         
         leftButton.name = "Left"
         
@@ -63,7 +63,7 @@ class GameScene: SKScene {
 
         rightButton.position = CGPoint(x:-160, y:-103)
 
-        rightButton.size = CGSize (width: 55, height: 55)
+        rightButton.size = CGSize (width: 50, height: 50)
         
         rightButton.name = "Right"
 
