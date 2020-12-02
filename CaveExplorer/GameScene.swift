@@ -59,7 +59,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var jumpButton: SKSpriteNode!
     var player1: SKSpriteNode!
     var moveDirection: String!
-    var background = SKSpriteNode(imageNamed: "caveimage.jpg")
+    var background = SKSpriteNode(imageNamed: "caveimage")
     
     override func didMove(to view: SKView) {
         // set up physics engine
@@ -170,7 +170,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
       
       // Create sprite
-      let monster = SKSpriteNode(imageNamed: "batimage.png")
+      let monster = SKSpriteNode(imageNamed: "batimage")
         monster.size = CGSize.init(width: 50, height: 40)
         
       monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size) // 1
@@ -239,7 +239,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let touchLocation = touch.location(in: self)
       
         // 2 - Set up initial location of projectile
-        let projectile = SKSpriteNode(imageNamed: "whip.png")
+        let projectile = SKSpriteNode(imageNamed: "whip")
         projectile.size = CGSize.init(width: 100, height: 40)
         let whipXPosition = player1.position.x + 50
         let whipYPosition = player1.position.y + 5

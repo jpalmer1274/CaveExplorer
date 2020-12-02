@@ -16,10 +16,7 @@
 		2BD56A192575F42300EE9E5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2BD56A182575F42300EE9E5E /* Assets.xcassets */; };
 		2BD56A242575F42300EE9E5E /* CaveExplorerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD56A232575F42300EE9E5E /* CaveExplorerTests.swift */; };
 		2BD56A2F2575F42300EE9E5E /* CaveExplorerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD56A2E2575F42300EE9E5E /* CaveExplorerUITests.swift */; };
-		7960130725781C6B005EA73B /* caveimage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7960130625781C6B005EA73B /* caveimage.jpg */; };
-		7960130C2578246C005EA73B /* batimage.png in Resources */ = {isa = PBXBuildFile; fileRef = 7960130B2578246C005EA73B /* batimage.png */; };
 		7960131125782F03005EA73B /* whip.png in Resources */ = {isa = PBXBuildFile; fileRef = 7960131025782F03005EA73B /* whip.png */; };
-		796013162578317F005EA73B /* backwardswhip.png in Resources */ = {isa = PBXBuildFile; fileRef = 796013152578317F005EA73B /* backwardswhip.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,10 +52,7 @@
 		2BD56A2A2575F42300EE9E5E /* CaveExplorerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CaveExplorerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BD56A2E2575F42300EE9E5E /* CaveExplorerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaveExplorerUITests.swift; sourceTree = "<group>"; };
 		2BD56A302575F42300EE9E5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7960130625781C6B005EA73B /* caveimage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = caveimage.jpg; path = ../../caveimage.jpg; sourceTree = "<group>"; };
-		7960130B2578246C005EA73B /* batimage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = batimage.png; path = ../../batimage.png; sourceTree = "<group>"; };
 		7960131025782F03005EA73B /* whip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = whip.png; path = ../../../Downloads/whip.png; sourceTree = "<group>"; };
-		796013152578317F005EA73B /* backwardswhip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = backwardswhip.png; path = ../../backwardswhip.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,10 +103,7 @@
 		2BD56A0A2575F41F00EE9E5E /* CaveExplorer */ = {
 			isa = PBXGroup;
 			children = (
-				796013152578317F005EA73B /* backwardswhip.png */,
 				7960131025782F03005EA73B /* whip.png */,
-				7960130B2578246C005EA73B /* batimage.png */,
-				7960130625781C6B005EA73B /* caveimage.jpg */,
 				2BD56A0B2575F41F00EE9E5E /* AppDelegate.swift */,
 				2BD56A0D2575F41F00EE9E5E /* GameScene.sks */,
 				2BD56A0F2575F41F00EE9E5E /* Actions.sks */,
@@ -248,11 +239,8 @@
 			files = (
 				2BD56A172575F41F00EE9E5E /* Main.storyboard in Resources */,
 				2BD56A0E2575F41F00EE9E5E /* GameScene.sks in Resources */,
-				7960130725781C6B005EA73B /* caveimage.jpg in Resources */,
-				7960130C2578246C005EA73B /* batimage.png in Resources */,
 				7960131125782F03005EA73B /* whip.png in Resources */,
 				2BD56A192575F42300EE9E5E /* Assets.xcassets in Resources */,
-				796013162578317F005EA73B /* backwardswhip.png in Resources */,
 				2BD56A102575F41F00EE9E5E /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
