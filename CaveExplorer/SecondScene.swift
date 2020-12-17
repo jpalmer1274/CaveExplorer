@@ -23,6 +23,7 @@ class SecondScene: SKScene, SKPhysicsContactDelegate {
     var leftWall: SKSpriteNode!
     var rightWall: SKSpriteNode!
     var ceiling: SKSpriteNode!
+    var buzzsaw: SKSpriteNode!
     
     override func didMove(to view: SKView) {
         // set up physics engine
@@ -46,18 +47,21 @@ class SecondScene: SKScene, SKPhysicsContactDelegate {
         rightWall.physicsBody?.categoryBitMask = PhysicsCategory.wall
         ceiling.physicsBody?.categoryBitMask = PhysicsCategory.wall
 
-        guard let player1 = childNode(withName: "player") as? SKSpriteNode else {
+        guard let player1 = childNode(withName: "player") as? SKSpriteNode, let buzzsaw = childNode(withName: "buzzsaw") as? SKSpriteNode else {
             return
         }
         
         self.player1 = player1
+        self.buzzsaw = buzzsaw
         
         setUpControls()
         
         run(SKAction.repeatForever(
               SKAction.sequence([
-                SKAction.run(addMonster),
-                SKAction.wait(forDuration: 5.0)
+                SKAction.run(addSpider),
+                SKAction.run(addBat),
+                SKAction.run(moveBuzzsaw),
+                SKAction.wait(forDuration: 7.0)
                 ])
             ))
     }
@@ -144,16 +148,30 @@ class SecondScene: SKScene, SKPhysicsContactDelegate {
     func random(min: CGFloat, max: CGFloat) -> CGFloat {
       return random() * (max - min) + min
     }
-
-    func addMonster() {
+    
+    func moveBuzzsaw() {
         
-      
+        let duration = CGFloat(3.5)
+        
+        // Create the actions
+        let actionMoveLeft = SKAction.move(to: CGPoint(x: -80, y: -135), duration: TimeInterval(duration))
+        
+        let actionMoveRight = SKAction.move(to: CGPoint(x: 160, y: -135), duration: TimeInterval(duration))
+        
+        //let actionMoveDone = SKAction.removeFromParent()
+        self.buzzsaw.run(SKAction.sequence([actionMoveLeft, actionMoveRight]))
+    }
+
+    func addBat() {
+
+      // create bat
       // Create sprite
       let monster = SKSpriteNode(imageNamed: "batimage")
+        monster.name = "bat"
         monster.size = CGSize.init(width: 50, height: 40)
         
-      monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size) 
-      monster.physicsBody?.isDynamic = true // 2
+      monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
+      monster.physicsBody?.isDynamic = true
       monster.physicsBody?.categoryBitMask = PhysicsCategory.monster
       monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
       monster.physicsBody?.collisionBitMask = PhysicsCategory.none
@@ -174,7 +192,36 @@ class SecondScene: SKScene, SKPhysicsContactDelegate {
                                      duration: TimeInterval(duration))
       let actionMoveDone = SKAction.removeFromParent()
       monster.run(SKAction.sequence([actionMove, actionMoveDone]))
-    }
+}
+            
+            // create spider
+func addSpider() {
+            let monster = SKSpriteNode(imageNamed: "spider")
+            monster.name = "spider"
+            monster.size = CGSize.init(width: 50, height: 50)
+              
+            monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
+            monster.physicsBody?.isDynamic = true
+            monster.physicsBody?.categoryBitMask = PhysicsCategory.monster
+            monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
+            monster.physicsBody?.collisionBitMask = PhysicsCategory.none
+            
+            let xCoor = random(min: -100, max: 100)
+            
+            monster.position = CGPoint(x: xCoor, y: size.height)
+            
+            addChild(monster)
+            
+            // Determine speed of the monster
+            let duration = random(min: CGFloat(5.0), max: CGFloat(8.0))
+            
+            let actionMoveDown = SKAction.move(to: CGPoint(x: xCoor, y: size.height * -1/4),
+                                           duration: TimeInterval(duration))
+            let actionMoveUp = SKAction.move(to: CGPoint(x: xCoor, y: size.height),
+                                             duration: TimeInterval(duration))
+            let actionMoveDone = SKAction.removeFromParent()
+            monster.run(SKAction.sequence([actionMoveDown, actionMoveUp, actionMoveDone]))
+}
     
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -296,11 +343,11 @@ extension SecondScene {
             secondBody = contact.bodyA
           }
         
-        if ((firstBody.node?.name == "") &&
+        if ((firstBody.node?.name == "spikeTrap" || firstBody.node?.name == "buzzsaw") &&
                 (secondBody.node?.name == "player")) {
         if let trap = firstBody.node as? SKSpriteNode,
            let explorer = secondBody.node as? SKSpriteNode {
-            print("collided w spike trap")
+            print("collided w trap")
             explorerDidColliedWithTrap(trap: trap, explorer: explorer)
         }
     }

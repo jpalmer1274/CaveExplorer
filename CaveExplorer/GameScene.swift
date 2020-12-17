@@ -48,7 +48,7 @@ struct PhysicsCategory {
   static let trap      : UInt32 = 0b10
   static let projectile: UInt32 = 0b10
   static let wall      : UInt32 = 4
-  static let diamond   : UInt32 = 0b1
+  static let diamond   : UInt32 = 0b10
 }
 
 

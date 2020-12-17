@@ -25,6 +25,7 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
     var leftWall: SKSpriteNode!
     var rightWall: SKSpriteNode!
     var ceiling: SKSpriteNode!
+    var diamond: SKSpriteNode!
     
     override func didMove(to view: SKView) {
         // set up physics engine
@@ -56,10 +57,12 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
         self.player1 = player1
         
         setUpControls()
+        //addDiamond()
         
         run(SKAction.repeatForever(
               SKAction.sequence([
-                SKAction.run(addMonster),
+                SKAction.run(addSpider),
+                SKAction.run(addBat),
                 SKAction.wait(forDuration: 5.0)
                 ])
             ))
@@ -161,15 +164,16 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
       return random() * (max - min) + min
     }
 
-    func addMonster() {
-        
-      
+    func addBat() {
+
+      // create bat
       // Create sprite
       let monster = SKSpriteNode(imageNamed: "batimage")
+        monster.name = "bat"
         monster.size = CGSize.init(width: 50, height: 40)
         
       monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
-      monster.physicsBody?.isDynamic = true // 2
+      monster.physicsBody?.isDynamic = true
       monster.physicsBody?.categoryBitMask = PhysicsCategory.monster
       monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
       monster.physicsBody?.collisionBitMask = PhysicsCategory.none
@@ -190,18 +194,36 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
                                      duration: TimeInterval(duration))
       let actionMoveDone = SKAction.removeFromParent()
       monster.run(SKAction.sequence([actionMove, actionMoveDone]))
-    }
-    
-    func addDiamond() {
-        let diamond = SKSpriteNode(imageNamed: "diamond")
-        diamond.size = CGSize.init(width: 50, height: 40)
-        
-        diamond.physicsBody?.isDynamic = true // 2
-        diamond.physicsBody?.categoryBitMask = PhysicsCategory.diamond
-        diamond.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
-        diamond.physicsBody?.collisionBitMask = PhysicsCategory.none
-        
-    }
+}
+            
+            // create spider
+func addSpider() {
+            let monster = SKSpriteNode(imageNamed: "spider")
+            monster.name = "spider"
+            monster.size = CGSize.init(width: 50, height: 50)
+              
+            monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
+            monster.physicsBody?.isDynamic = true
+            monster.physicsBody?.categoryBitMask = PhysicsCategory.monster
+            monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
+            monster.physicsBody?.collisionBitMask = PhysicsCategory.none
+            
+            let xCoor = random(min: -100, max: 100)
+            
+            monster.position = CGPoint(x: xCoor, y: size.height)
+            
+            addChild(monster)
+            
+            // Determine speed of the monster
+            let duration = random(min: CGFloat(5.0), max: CGFloat(8.0))
+            
+            let actionMoveDown = SKAction.move(to: CGPoint(x: xCoor, y: size.height * -1/4),
+                                           duration: TimeInterval(duration))
+            let actionMoveUp = SKAction.move(to: CGPoint(x: xCoor, y: size.height),
+                                             duration: TimeInterval(duration))
+            let actionMoveDone = SKAction.removeFromParent()
+            monster.run(SKAction.sequence([actionMoveDown, actionMoveUp, actionMoveDone]))
+}
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 
@@ -339,6 +361,12 @@ extension FinalScene {
                 (secondBody.node?.name == "player")) {
             print("collided with monster")
             displayLosingDialog()
+        }
+        
+        if (((firstBody.node?.name == "diamond") && (secondBody.node?.name == "player")) ||
+            ((firstBody.node?.name == "player") && (secondBody.node?.name == "diamond"))) {
+            print("collided with diamond")
+            displayWinningDialog()
         }
      
       
