@@ -21,7 +21,7 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
     var jumpButton: SKSpriteNode!
     var player1: SKSpriteNode!
     var moveDirection: String!
-    var background = SKSpriteNode(imageNamed: "caveimage")
+    var background = SKSpriteNode(imageNamed: "greencave")
     var leftWall: SKSpriteNode!
     var rightWall: SKSpriteNode!
     var ceiling: SKSpriteNode!
@@ -37,6 +37,8 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
         }
+        
+        background.size = self.frame.size
         
         
         leftWall = childNode(withName: "leftWall") as? SKSpriteNode
