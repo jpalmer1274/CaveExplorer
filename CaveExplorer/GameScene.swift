@@ -45,8 +45,10 @@ struct PhysicsCategory {
   static let all       : UInt32 = UInt32.max
   static let monster   : UInt32 = 0b1
   static let explorer  : UInt32 = 0b1
+  static let trap      : UInt32 = 0b10
   static let projectile: UInt32 = 0b10
   static let wall      : UInt32 = 4
+  static let diamond   : UInt32 = 0b1
 }
 
 
@@ -65,6 +67,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ceiling: SKSpriteNode!
     var moveDirection: String!
     var background = SKSpriteNode(imageNamed: "caveimage")
+    var monsterNum: Int!
     
     override func didMove(to view: SKView) {
         // set up physics engine
@@ -91,13 +94,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         self.player1 = player1
+//        self.player1.physicsBody?.categoryBitMask = PhysicsCategory.explorer
+//        self.player1.physicsBody?.contactTestBitMask = PhysicsCategory.monster
+//        self.player1.physicsBody?.collisionBitMask = PhysicsCategory.none
         
         setUpControls()
         
+        addTrap()
+        
         run(SKAction.repeatForever(
               SKAction.sequence([
-                SKAction.run(addMonster),
-                SKAction.wait(forDuration: 5.0)
+                SKAction.run(addSpider),
+                SKAction.run(addBat),
+                SKAction.wait(forDuration: 7.0)
                 ])
             ))
     }
@@ -142,6 +151,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         jumpButton.name = "Up"
 
         addChild(jumpButton)
+        
+        
+        
     }
     
     
@@ -173,10 +185,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func random(min: CGFloat, max: CGFloat) -> CGFloat {
       return random() * (max - min) + min
     }
+    
+    func randomizeMonster() {
+        self.monsterNum = Int(random(min: 0, max: 1))
+    }
 
-    func addMonster() {
-        
-      
+    func addBat() {
+
+        // create bat
       // Create sprite
       let monster = SKSpriteNode(imageNamed: "batimage")
         monster.size = CGSize.init(width: 50, height: 40)
@@ -203,8 +219,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                      duration: TimeInterval(duration))
       let actionMoveDone = SKAction.removeFromParent()
       monster.run(SKAction.sequence([actionMove, actionMoveDone]))
-    }
+}
+            
+            // create spider
+func addSpider() {
+            let monster = SKSpriteNode(imageNamed: "spider")
+            monster.size = CGSize.init(width: 50, height: 50)
+              
+            monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
+            monster.physicsBody?.isDynamic = true
+            monster.physicsBody?.categoryBitMask = PhysicsCategory.monster
+            monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
+            monster.physicsBody?.collisionBitMask = PhysicsCategory.none
+            
+            let xCoor = random(min: -100, max: 100)
+            
+            monster.position = CGPoint(x: xCoor, y: size.height)
+            
+            addChild(monster)
+            
+            // Determine speed of the monster
+            let duration = random(min: CGFloat(5.0), max: CGFloat(8.0))
+            
+            let actionMoveDown = SKAction.move(to: CGPoint(x: xCoor, y: size.height * -1/4),
+                                           duration: TimeInterval(duration))
+            let actionMoveUp = SKAction.move(to: CGPoint(x: xCoor, y: size.height),
+                                             duration: TimeInterval(duration))
+            let actionMoveDone = SKAction.removeFromParent()
+            monster.run(SKAction.sequence([actionMoveDown, actionMoveUp, actionMoveDone]))
+}
     
+    func addTrap() {
+        let trap = SKSpriteNode(imageNamed: "spiketrap")
+        trap.size = CGSize.init(width: 40, height: 40)
+        trap.physicsBody = SKPhysicsBody(rectangleOf: trap.size)
+        trap.physicsBody?.isDynamic = false
+        trap.physicsBody?.affectedByGravity = true
+        trap.physicsBody?.categoryBitMask = PhysicsCategory.trap
+        trap.physicsBody?.contactTestBitMask = PhysicsCategory.explorer
+        trap.physicsBody?.collisionBitMask = PhysicsCategory.none
+        trap.position = CGPoint(x: random(min: -50,max: 160), y: -150)
+        trap.name = "spiketrap"
+        addChild(trap)
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 
@@ -230,6 +287,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func attackDidCollideWithMonster(projectile: SKSpriteNode, monster: SKSpriteNode) {
       projectile.removeFromParent()
       monster.removeFromParent()
+    }
+    
+    func explorerDidColliedWithTrap(trap: SKSpriteNode, explorer: SKSpriteNode) {
+            explorer.removeFromParent()
     }
 
     
@@ -290,6 +351,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
+        
         if (self.moveDirection == "left") {
             player1.position = CGPoint(x:player1.position.x-5, y:player1.position.y)
         } else if (self.moveDirection == "right") {
@@ -305,7 +367,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // make player run sequence
             player1.run(jumpSequence)
         } else {
-            
+
         }
     }
 }
@@ -335,6 +397,14 @@ extension GameScene {
           attackDidCollideWithMonster(projectile: projectile, monster: monster)
         }
       }
+        
+    if ((firstBody.categoryBitMask & PhysicsCategory.explorer != 0) &&
+        (secondBody.categoryBitMask & PhysicsCategory.trap != 0)) {
+        if let explorer = firstBody.node as? SKSpriteNode,
+           let trap = secondBody.node as? SKSpriteNode {
+            explorerDidColliedWithTrap(trap: trap, explorer: explorer)
+        }
+    }
         
         if ((firstBody.node?.name == "rightWall") &&
                 (secondBody.node?.name == "player")) {

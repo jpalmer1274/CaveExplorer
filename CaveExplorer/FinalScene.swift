@@ -172,6 +172,16 @@ class FinalScene: SKScene, SKPhysicsContactDelegate {
       monster.run(SKAction.sequence([actionMove, actionMoveDone]))
     }
     
+    func addDiamond() {
+        let diamond = SKSpriteNode(imageNamed: "diamond")
+        diamond.size = CGSize.init(width: 50, height: 40)
+        
+        diamond.physicsBody?.isDynamic = true // 2
+        diamond.physicsBody?.categoryBitMask = PhysicsCategory.diamond
+        diamond.physicsBody?.contactTestBitMask = PhysicsCategory.projectile
+        diamond.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+    }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 
