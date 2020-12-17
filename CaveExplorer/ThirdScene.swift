@@ -104,13 +104,21 @@ class ThirdScene: SKScene, SKPhysicsContactDelegate {
         addChild(jumpButton)
     }
     
+    func displayLosingDialog() {
+        let alert = UIAlertController(title: "You Lost!", message: "Try Again?", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Yes!", style: .default, handler: { action in
+                    let newScene = GameScene(fileNamed: "GameScene")
+                    let animation = SKTransition.reveal(with: .left, duration: 1)
+                    newScene?.scaleMode = .aspectFill
+                    self.scene?.view?.presentScene(newScene!, transition: animation)
+                         })
+                    alert.addAction(ok)
+                    self.view?.window?.rootViewController?.present(alert, animated: true, completion: nil)
+    }
+    
     
     func touchDown(atPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.green
-//            self.addChild(n)
-//        }
+
     
     }
     
@@ -194,6 +202,11 @@ class ThirdScene: SKScene, SKPhysicsContactDelegate {
     func attackDidCollideWithMonster(projectile: SKSpriteNode, monster: SKSpriteNode) {
       projectile.removeFromParent()
       monster.removeFromParent()
+    }
+    
+    func explorerDidColliedWithTrap(trap: SKSpriteNode, explorer: SKSpriteNode) {
+            explorer.removeFromParent()
+            displayLosingDialog()
     }
 
     
@@ -287,6 +300,21 @@ extension ThirdScene {
         firstBody = contact.bodyB
         secondBody = contact.bodyA
       }
+        
+        if ((firstBody.node?.name == "") &&
+                (secondBody.node?.name == "player")) {
+        if let trap = firstBody.node as? SKSpriteNode,
+           let explorer = secondBody.node as? SKSpriteNode {
+            print("collided w spike trap")
+            explorerDidColliedWithTrap(trap: trap, explorer: explorer)
+        }
+    }
+        
+        if (((firstBody.node?.name == "spider") || (firstBody.node?.name == "bat")) &&
+                (secondBody.node?.name == "player")) {
+            print("collided with monster")
+            displayLosingDialog()
+        }
      
       
       if ((firstBody.categoryBitMask & PhysicsCategory.monster != 0) &&

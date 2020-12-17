@@ -65,6 +65,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var leftWall: SKSpriteNode!
     var rightWall: SKSpriteNode!
     var ceiling: SKSpriteNode!
+    var spikeTrap: SKSpriteNode!
     var moveDirection: String!
     var background = SKSpriteNode(imageNamed: "caveimage")
     var monsterNum: Int!
@@ -94,13 +95,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         self.player1 = player1
-//        self.player1.physicsBody?.categoryBitMask = PhysicsCategory.explorer
-//        self.player1.physicsBody?.contactTestBitMask = PhysicsCategory.monster
-//        self.player1.physicsBody?.collisionBitMask = PhysicsCategory.none
+
         
         setUpControls()
-        
-        addTrap()
         
         run(SKAction.repeatForever(
               SKAction.sequence([
@@ -110,6 +107,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 ])
             ))
     }
+    
+    deinit{print("GameScene deinited")}
     
 
     func setUpControls() {
@@ -151,15 +150,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         jumpButton.name = "Up"
 
         addChild(jumpButton)
-        
-        
-        
+    }
+    
+    func displayLosingDialog() {
+        let alert = UIAlertController(title: "You Lost!", message: "Try Again?", preferredStyle: .alert)
+            let ok = UIAlertAction(title: "Yes!", style: .default, handler: { action in
+                    let newScene = GameScene(fileNamed: "GameScene")
+                    let animation = SKTransition.reveal(with: .left, duration: 1)
+                    newScene?.scaleMode = .aspectFill
+                    self.scene?.view?.presentScene(newScene!, transition: animation)
+                         })
+                    alert.addAction(ok)
+                    self.view?.window?.rootViewController?.present(alert, animated: true, completion: nil)
     }
     
     
     func touchDown(atPoint pos : CGPoint) {
-
-    
     }
     
     func touchMoved(toPoint pos : CGPoint) {
@@ -192,9 +198,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     func addBat() {
 
-        // create bat
+      // create bat
       // Create sprite
       let monster = SKSpriteNode(imageNamed: "batimage")
+        monster.name = "bat"
         monster.size = CGSize.init(width: 50, height: 40)
         
       monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
@@ -224,6 +231,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // create spider
 func addSpider() {
             let monster = SKSpriteNode(imageNamed: "spider")
+            monster.name = "spider"
             monster.size = CGSize.init(width: 50, height: 50)
               
             monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size)
@@ -248,23 +256,9 @@ func addSpider() {
             let actionMoveDone = SKAction.removeFromParent()
             monster.run(SKAction.sequence([actionMoveDown, actionMoveUp, actionMoveDone]))
 }
-    
-    func addTrap() {
-        let trap = SKSpriteNode(imageNamed: "spiketrap")
-        trap.size = CGSize.init(width: 40, height: 40)
-        trap.physicsBody = SKPhysicsBody(rectangleOf: trap.size)
-        trap.physicsBody?.isDynamic = false
-        trap.physicsBody?.affectedByGravity = true
-        trap.physicsBody?.categoryBitMask = PhysicsCategory.trap
-        trap.physicsBody?.contactTestBitMask = PhysicsCategory.explorer
-        trap.physicsBody?.collisionBitMask = PhysicsCategory.none
-        trap.position = CGPoint(x: random(min: -50,max: 160), y: -150)
-        trap.name = "spiketrap"
-        addChild(trap)
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         for touch: AnyObject in touches {
             let location = touch.location(in: self)
             let node = self.atPoint(location)
@@ -291,6 +285,7 @@ func addSpider() {
     
     func explorerDidColliedWithTrap(trap: SKSpriteNode, explorer: SKSpriteNode) {
             explorer.removeFromParent()
+            displayLosingDialog()
     }
 
     
@@ -389,27 +384,36 @@ extension GameScene {
         secondBody = contact.bodyA
       }
         
+        
+        if ((firstBody.node?.name == "spikeTrap") &&
+                (secondBody.node?.name == "player")) {
+        if let trap = firstBody.node as? SKSpriteNode,
+           let explorer = secondBody.node as? SKSpriteNode {
+            print("collided w spike trap")
+            explorerDidColliedWithTrap(trap: trap, explorer: explorer)
+        }
+    }
+        
+        if (((firstBody.node?.name == "spider") || (firstBody.node?.name == "bat")) &&
+                (secondBody.node?.name == "player")) {
+            print("collided with monster")
+            displayLosingDialog()
+        }
      
       if ((firstBody.categoryBitMask & PhysicsCategory.monster != 0) &&
           (secondBody.categoryBitMask & PhysicsCategory.projectile != 0)) {
         if let monster = firstBody.node as? SKSpriteNode,
           let projectile = secondBody.node as? SKSpriteNode {
+            print("here")
           attackDidCollideWithMonster(projectile: projectile, monster: monster)
         }
       }
         
-    if ((firstBody.categoryBitMask & PhysicsCategory.explorer != 0) &&
-        (secondBody.categoryBitMask & PhysicsCategory.trap != 0)) {
-        if let explorer = firstBody.node as? SKSpriteNode,
-           let trap = secondBody.node as? SKSpriteNode {
-            explorerDidColliedWithTrap(trap: trap, explorer: explorer)
-        }
-    }
         
         if ((firstBody.node?.name == "rightWall") &&
                 (secondBody.node?.name == "player")) {
-            if let player = firstBody.node as? SKSpriteNode,
-               let wall = secondBody.node as? SKSpriteNode {
+            if let _ = firstBody.node as? SKSpriteNode,
+               let _ = secondBody.node as? SKSpriteNode {
                 print("collided w wall")
                 transferToNextScene()
             }
